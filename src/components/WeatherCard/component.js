@@ -5,7 +5,7 @@ import Location from "components/WeatherCard/Location";
 import Condition from "components/WeatherCard/Condition";
 import Icon from "components/WeatherCard/Icon";
 
-const WeatherCard = ({ temp, condition, city, country }) => {
+const WeatherCard = ({ temp, condition, city, country, getWeather }) => {
   let highColor = 0;
   let lowColor = 0;
   let bg = null;
@@ -42,7 +42,7 @@ const WeatherCard = ({ temp, condition, city, country }) => {
 
   return (
     <Card>
-      <Location city={city} country={country} />
+      <Location getWeather={getWeather} city={city} country={country} />
       <Icon condition={condition} />
       <Condition temp={temp} condition={condition} />
     </Card>
