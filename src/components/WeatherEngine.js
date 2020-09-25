@@ -36,11 +36,7 @@ const WeatherEngine = ({ location }) => {
     }
     setLoading(false);
   };
-  // Function to handle search queries from Users
-  const handleSearch = e => {
-    e.preventDefault();
-    getWeather(query);
-  };
+
   // Hook to use this code only once when the component is mounted
   useEffect(
     () => {
@@ -49,38 +45,40 @@ const WeatherEngine = ({ location }) => {
     [location]
   );
 
+  if (error) {
+    return (
+      <div style={{ color: "black" }}>
+        There has been an error!
+        <br />
+        <button onClick={() => setError(false)}>Reset</button>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          width: "200px",
+          height: "240px",
+          justifyContent: "center",
+          alignItems: "center"
+        }}
+      >
+        <PuffLoader color="red" />
+      </div>
+    );
+  }
+
   return (
-    <div>
-      {!loading && !error ? (
-        <div>
-          <WeatherCard
-            temp={weather.temp}
-            condition={weather.condition}
-            city={weather.city}
-            country={weather.country}
-            getWeather={getWeather}
-          />
-        </div>
-      ) : loading ? (
-        <div
-          style={{
-            display: "flex",
-            width: "200px",
-            height: "240px",
-            justifyContent: "center",
-            alignItems: "center"
-          }}
-        >
-          <PuffLoader color="red" />
-        </div>
-      ) : !loading && error ? (
-        <div style={{ color: "black" }}>
-          There has been an error!
-          <br />
-          <button onClick={() => setError(false)}>Reset</button>
-        </div>
-      ) : null}
-    </div>
+    <WeatherCard
+      temp={weather.temp}
+      condition={weather.condition}
+      city={weather.city}
+      country={weather.country}
+      getWeather={getWeather}
+    />
   );
 };
 

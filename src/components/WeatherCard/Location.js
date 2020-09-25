@@ -1,29 +1,48 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import styled from "@emotion/styled";
+import { motion } from "framer-motion";
 
 const Location = ({ city, country, getWeather }) => {
   const [query, setQuery] = useState("");
   const [inputMode, setInputMode] = useState(false);
+  const inputRef = useRef("");
+
+  useEffect(
+    () => {
+      if (inputMode) {
+        inputRef.current.focus();
+      }
+    },
+    [inputMode]
+  );
+
+  if (inputMode) {
+    return (
+      <Container>
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+          <FormElement
+            onSubmit={e => {
+              e.preventDefault();
+              getWeather(query);
+            }}
+          >
+            <InputField
+              ref={inputRef}
+              required
+              value={query}
+              onChange={e => setQuery(e.target.value)}
+            />
+            <SearchButton type="submit">Search</SearchButton>
+            <CancelButton onClick={() => setInputMode(false)}>X</CancelButton>
+          </FormElement>
+        </motion.div>
+      </Container>
+    );
+  }
 
   return (
     <Container>
-      {!inputMode && <City onClick={() => setInputMode(true)}>{city}</City>}
-      {inputMode && (
-        <form
-          onSubmit={e => {
-            e.preventDefault();
-            getWeather(query);
-          }}
-        >
-          <input
-            required
-            value={query}
-            onChange={e => setQuery(e.target.value)}
-          />
-          <button type="submit">Search</button>
-          <button onClick={() => setInputMode(false)}>Cancel</button>
-        </form>
-      )}
+      <City onClick={() => setInputMode(true)}>{city}</City>
       <Country>{country}</Country>
     </Container>
   );
@@ -32,6 +51,49 @@ const Location = ({ city, country, getWeather }) => {
 export default Location;
 
 const Container = styled.div`text-align: center;`;
+
+const FormElement = styled.form`
+  display: flex;
+  position: relative;
+  background: #46618b;
+  border-radius: 5px;
+`;
+const InputField = styled.input`
+  padding: 5px;
+  background: transparent;
+  border: none;
+  width: 90px;
+  color: white;
+  &:focus {
+    outline: 0;
+  }
+`;
+const SearchButton = styled.button`
+  padding: 5px;
+  background: #394e78;
+  border: none;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+  color: white;
+  border: none;
+  cursor: pointer;
+`;
+const CancelButton = styled.span`
+  font-size: 0, 8em;
+  cursor: pointer;
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: red;
+  right: -8px;
+  top: -10px;
+  box-shadow: 1px 0px 2px rgbq(0, 0, 0, 0, 4);
+`;
+
 const City = styled.h1`
   font-family: "Roboto", sans-serif;
   font-size: 1.6em;
