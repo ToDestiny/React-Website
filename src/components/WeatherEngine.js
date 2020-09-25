@@ -4,8 +4,11 @@ import WeatherCard from "components/WeatherCard/component";
 
 const WeatherEngine = ({ location }) => {
   // Initialize state variables
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState(""); //User query
+  const [loading, setLoading] = useState(false); // Loading state
+  const [error, setError] = useState(false); //Error handling
   const [weather, setWeather] = useState({
+    // To display and store weather for specific cities
     temp: null,
     city: null,
     condition: null,
@@ -14,16 +17,23 @@ const WeatherEngine = ({ location }) => {
 
   // Defining the data fetching function
   const getWeather = async q => {
-    const apiRes = await fetch(
-      `http://api.openweathermap.org/data/2.5/weather?q=${q}&units=metric&APPID=b9cc2647ff2f920e969cd8ea1e1b1379`
-    );
-    const resJSON = await apiRes.json();
-    setWeather({
-      temp: resJSON.main.temp,
-      city: resJSON.name,
-      condition: resJSON.weather[0].main,
-      country: resJSON.sys.country
-    });
+    setQuery(""); // Reset query
+    setLoading(true); // Set loading to true while fetching data
+    try {
+      const apiRes = await fetch(
+        `http://api.openweathermap.org/data/2.5/weather?q=${q}&units=metric&APPID=b9cc2647ff2f920e969cd8ea1e1b1379`
+      );
+      const resJSON = await apiRes.json();
+      setWeather({
+        temp: resJSON.main.temp,
+        city: resJSON.name,
+        condition: resJSON.weather[0].main,
+        country: resJSON.sys.country
+      });
+    } catch (error) {
+      setError(true); // If any error, set to true
+    }
+    setLoading(false);
   };
   // Function to handle search queries from Users
   const handleSearch = e => {
@@ -40,16 +50,32 @@ const WeatherEngine = ({ location }) => {
 
   return (
     <div>
-      <WeatherCard
-        temp={weather.temp}
-        condition={weather.condition}
-        city={weather.city}
-        country={weather.country}
-      />
-      <form>
-        <input value={query} onChange={e => setQuery(e.target.value)} />
-        <button onClick={e => handleSearch(e)}>Search</button>
-      </form>
+      {!loading && !error ? (
+        <div>
+          <WeatherCard
+            temp={weather.temp}
+            condition={weather.condition}
+            city={weather.city}
+            country={weather.country}
+          />
+          <form>
+            <input
+              required
+              value={query}
+              onChange={e => setQuery(e.target.value)}
+            />
+            <button type="submit">Search</button>
+          </form>
+        </div>
+      ) : loading ? (
+        <div style={{ color: "black" }}>Loading</div>
+      ) : !loading && error ? (
+        <div style={{ color: "black" }}>
+          There has been an error!
+          <br />
+          <button onClick={() => setError(false)}>Reset</button>
+        </div>
+      ) : null}
     </div>
   );
 };

@@ -12,24 +12,22 @@ const WeatherCard = ({ temp, condition, city, country }) => {
   if (temp > 12) {
     // Hot weather mechanics
     highColor = (1 - (temp - 12) / 28) * 255;
-    lowColor = highColor - 150;
+    lowColor = highColor - 100;
     bg = `linear-gradient(
       to top,
-      rgb(255, ${highColor}, 0),
-      rgb(255, ${lowColor}, 0)
+      rgb(255, ${Math.abs(highColor)}, 0),
+      rgb(255, ${Math.abs(lowColor)}, 0)
     )`;
   } else if (temp <= 12) {
     // Cold weather mechanics
     highColor = (1 - (temp + 20) / 32) * 255;
-    lowColor = highColor - 150;
+    lowColor = highColor - 100;
     bg = `linear-gradient(
       to top,
-      rgb(0, ${highColor}, 255),
-      rgb(0, ${lowColor}, 255)
+      rgb(0, ${Math.abs(highColor)}, 255),
+      rgb(0, ${Math.abs(lowColor)}, 255)
     )`;
   }
-  console.log(lowColor);
-  console.log(highColor);
   const Card = styled.div`
     margin: 0 auto;
     background: ${bg};
